@@ -38,9 +38,9 @@ jobs:
         run: cargo test --verbose --lib
 
       - name: Build the benchmark target(s)
-        run: cargo codspeed build codspeed
+        run: cargo codspeed build --bench codspeed
 
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          run: cargo codspeed run codspeed
+          run: cargo codspeed run --bench codspeed
