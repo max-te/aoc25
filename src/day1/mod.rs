@@ -44,13 +44,9 @@ fn part_two(input: &str) -> Output {
     while !input.is_empty() {
         let direction = input[0];
         input = &input[1..];
-        let (mut amount, amount_digits) = parse_initial_digits(input);
+        let (amount, amount_digits) = parse_initial_digits(input);
         input = &input[amount_digits + 1..];
-        let started_at_zero = position == 0;
-        if amount >= 100 {
-            zeroes += (amount / 100) as u64;
-            amount %= 100;
-        }
+        let not_started_at_zero = if position == 0 { 0 } else { 1 };
 
         position += match direction {
             b'L' => -amount,
@@ -58,14 +54,13 @@ fn part_two(input: &str) -> Output {
             _ => unreachable!(),
         };
 
-        if !started_at_zero && (position <= 0 || position >= 100) {
-            zeroes += 1;
+        if position <= 0 {
+            zeroes += (position.unsigned_abs() / 100) + not_started_at_zero;
+            position = position.rem_euclid(100);
+        } else if position >= 100 {
+            zeroes += position.unsigned_abs() / 100;
+            position = position.rem_euclid(100);
         }
-        // println!(
-        //     "{line} = {direction} {amount} -> {position} {zeroes} {}",
-        //     position.rem_euclid(100)
-        // );
-        position = position.rem_euclid(100);
     }
     zeroes
 }
