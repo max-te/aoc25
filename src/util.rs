@@ -21,14 +21,14 @@ pub fn parse_initial_digits(digits: &[u8]) -> (i64, usize) {
 }
 
 #[inline]
-pub fn parse_initial_digits_unsigned(digits: &[u8]) -> (u64, usize) {
+pub fn parse_initial_digits_unsigned_i16(digits: &[u8]) -> (i16, usize) {
     let mut len = 0;
-    let mut res: u64 = 0;
+    let mut res: i16 = 0;
     for &digit in digits {
         match digit {
             b'0'..=b'9' => {
                 res *= 10;
-                res += (digit - b'0') as u64;
+                res += (digit - b'0') as i16;
             }
             _ => break,
         }

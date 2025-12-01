@@ -1,8 +1,8 @@
 use aoc_runner_derive::aoc;
 
-use crate::util::parse_initial_digits_unsigned;
+use crate::util::parse_initial_digits_unsigned_i16;
 
-type Output = u64;
+type Output = u16;
 
 #[aoc(day1, part1)]
 fn part_one(input: &str) -> Output {
@@ -15,12 +15,12 @@ fn part_one(input: &str) -> Output {
     while cursor < input.len() {
         let direction = input[cursor];
         cursor += 1;
-        let (amount, amount_digits) = parse_initial_digits_unsigned(&input[cursor..]);
+        let (amount, amount_digits) = parse_initial_digits_unsigned_i16(&input[cursor..]);
         cursor += amount_digits + 1;
         position = (position
             + match direction {
-                b'L' => -(amount as i64),
-                b'R' => amount as i64,
+                b'L' => -amount,
+                b'R' => amount,
                 _ => unreachable!(),
             })
             % 100;
@@ -46,13 +46,13 @@ fn part_two(input: &str) -> Output {
     while cursor < input.len() {
         let direction = input[cursor];
         cursor += 1;
-        let (amount, amount_digits) = parse_initial_digits_unsigned(&input[cursor..]);
+        let (amount, amount_digits) = parse_initial_digits_unsigned_i16(&input[cursor..]);
         cursor += amount_digits + 1;
         let not_started_at_zero = if position == 0 { 0 } else { 1 };
 
         position += match direction {
-            b'L' => -(amount as i64),
-            b'R' => amount as i64,
+            b'L' => -amount,
+            b'R' => amount,
             _ => unreachable!(),
         };
 
