@@ -6,16 +6,17 @@ type Output = u64;
 
 #[aoc(day1, part1)]
 fn part_one(input: &str) -> Output {
-    let mut input = input.as_bytes();
+    let input = input.as_bytes();
+    let mut cursor = 0;
 
     let mut position = 50;
     let mut zeroes = 0;
 
-    while !input.is_empty() {
-        let direction = input[0];
-        input = &input[1..];
-        let (amount, amount_digits) = parse_initial_digits(input);
-        input = &input[amount_digits + 1..];
+    while cursor < input.len() {
+        let direction = input[cursor];
+        cursor += 1;
+        let (amount, amount_digits) = parse_initial_digits(&input[cursor..]);
+        cursor += amount_digits + 1;
         position = (position
             + match direction {
                 b'L' => -amount,
@@ -36,16 +37,17 @@ pub fn part1(puzzle: &str) -> Output {
 
 #[aoc(day1, part2)]
 fn part_two(input: &str) -> Output {
-    let mut input = input.as_bytes();
+    let input = input.as_bytes();
+    let mut cursor = 0;
 
     let mut position = 50;
     let mut zeroes = 0;
 
-    while !input.is_empty() {
-        let direction = input[0];
-        input = &input[1..];
-        let (amount, amount_digits) = parse_initial_digits(input);
-        input = &input[amount_digits + 1..];
+    while cursor < input.len() {
+        let direction = input[cursor];
+        cursor += 1;
+        let (amount, amount_digits) = parse_initial_digits(&input[cursor..]);
+        cursor += amount_digits + 1;
         let not_started_at_zero = if position == 0 { 0 } else { 1 };
 
         position += match direction {
