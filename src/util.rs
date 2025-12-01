@@ -19,3 +19,20 @@ pub fn parse_initial_digits(digits: &[u8]) -> (i64, usize) {
     };
     (res, len)
 }
+
+#[inline]
+pub fn parse_initial_digits_unsigned(digits: &[u8]) -> (u64, usize) {
+    let mut len = 0;
+    let mut res: u64 = 0;
+    for &digit in digits {
+        match digit {
+            b'0'..=b'9' => {
+                res *= 10;
+                res += (digit - b'0') as u64;
+            }
+            _ => break,
+        }
+        len += 1;
+    }
+    (res, len)
+}
