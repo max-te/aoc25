@@ -95,27 +95,30 @@ pub fn part1(puzzle: &str) -> Output {
     part_one(puzzle)
 }
 
-static PRIMES: &[u32] = &[3, 5, 7]; // u32::MAX has 10 digits, this should suffice
+static ODD_PRIME_DIVISORS: [&[(u64, u64)]; 11] = [
+    &[],                 // 0
+    &[],                 // 1
+    &[],                 // 2
+    &[(10, 111)],        // 3
+    &[],                 // 4
+    &[(10, 11111)],      // 5
+    &[(100, 10101)],     // 6
+    &[(10, 1111111)],    // 7
+    &[],                 // 8
+    &[(1000, 1001001)],  // 9
+    &[(100, 101010101)], // 10
+]; // u32::MAX has 10 digits, this should suffice
 
 fn is_sillier_number(id: u64, len: u32) -> bool {
-    for &num_parts in PRIMES {
-        if len.is_multiple_of(num_parts) {
-            let part_len = len / num_parts;
-            let divisor = 10u64.pow(part_len);
+    for &(divisor, multiplier) in ODD_PRIME_DIVISORS[len as usize] {
+        let init = id % divisor;
+        let expected = init * multiplier;
 
-            let init = id % divisor;
-            let mut expected = init;
-            for _ in 1..num_parts {
-                expected *= divisor;
-                expected += init
+        if id == expected {
+            if is_silly_number(id, len) {
+                return false;
             }
-
-            if id == expected {
-                if is_silly_number(id, len) {
-                    return false;
-                }
-                return true;
-            }
+            return true;
         }
     }
     false
