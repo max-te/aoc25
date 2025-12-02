@@ -109,6 +109,7 @@ static ODD_PRIME_DIVISORS: [Option<(u64, u64)>; 11] = [
     Some((100, 101010101)), // 10
 ]; // u32::MAX has 10 digits, this should suffice
 
+#[allow(unused)]
 fn is_sillier_number(id: u64, len: u32) -> bool {
     if let Some((divisor, multiplier)) = ODD_PRIME_DIVISORS[len as usize] {
         let init = id % divisor;
@@ -136,6 +137,23 @@ fn is_sillier_number_test() {
     assert!(!is_sillier_number(121234, 6));
 }
 
+fn sum_sillier_numbers_in_range(range_start: u64, range_end: u64, len: u32) -> Output {
+    let Some((modulus, silly_step)) = ODD_PRIME_DIVISORS[len as usize] else {
+        return 0;
+    };
+
+    let mut sillier = modulus / 10 * silly_step;
+    let mut sum = 0;
+    while sillier <= range_end {
+        if range_start <= sillier && !is_silly_number(sillier, len) {
+            sum += sillier;
+        }
+        sillier += silly_step;
+    }
+
+    sum
+}
+
 #[aoc(day2, part2)]
 fn part_two(input: &str) -> Output {
     let input = input.as_bytes();
@@ -152,15 +170,13 @@ fn part_two(input: &str) -> Output {
         let mut digit_increment = 10u64.pow(digits);
 
         id_sum += sum_2_sillies(range_start, range_end, digits);
-        for i in range_start..=range_end {
-            if i == digit_increment {
-                digit_increment *= 10;
-                digits += 1;
-                // Powers of 10 are not silly
-            } else if is_sillier_number(i, digits) {
-                id_sum += i;
-            }
+
+        while digit_increment < range_end {
+            id_sum += sum_sillier_numbers_in_range(range_start, digit_increment, digits);
+            digits += 1;
+            digit_increment *= 10;
         }
+        id_sum += sum_sillier_numbers_in_range(range_start, range_end, digits);
     }
 
     id_sum
