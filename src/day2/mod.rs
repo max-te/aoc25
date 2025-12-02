@@ -4,6 +4,51 @@ use crate::util::parse_initial_digits_unsigned_u64;
 
 type Output = u64;
 
+fn sum_2_sillies(range_start: u64, range_end: u64, start_digits: u32) -> Output {
+    let mut sum = 0;
+    let mut half_digits = start_digits.div_ceil(2);
+
+    let mut silly_step = 10u64.pow(half_digits) + 1;
+    let mut silly = if !start_digits.is_multiple_of(2) {
+        10u64.pow(half_digits * 2 - 1) + 10u64.pow(half_digits - 1)
+    } else {
+        let divisor = 10u64.pow(half_digits);
+        let left = range_start / divisor;
+        let silly = left + left * divisor;
+        if silly >= range_start {
+            silly
+        } else {
+            silly + silly_step
+        }
+    };
+
+    let mut digit_increment = silly_step * 10u64.pow(half_digits);
+    #[cfg(test)]
+    println!(
+        "Next silly from {range_start} is {silly} with {half_digits}*2 digits. Go in {silly_step}s until {digit_increment}"
+    );
+    while silly <= range_end {
+        if silly == digit_increment {
+            half_digits += 1;
+            silly_step = 10u64.pow(half_digits) + 1;
+            silly = 10u64.pow(half_digits * 2 - 1) + 10u64.pow(half_digits - 1);
+            digit_increment = silly_step * 10u64.pow(half_digits);
+            #[cfg(test)]
+            println!(
+                "Silly jump to {silly} with {half_digits}*2 digits. Go in {silly_step}s until {digit_increment}"
+            );
+        } else {
+            sum += silly;
+            silly += silly_step;
+            #[cfg(test)]
+            println!("Next {silly}")
+        }
+    }
+    #[cfg(test)]
+    println!("reached end {range_end}");
+    sum
+}
+
 #[aoc(day2, part1)]
 fn part_one(input: &str) -> Output {
     let input = input.as_bytes();
@@ -17,42 +62,7 @@ fn part_one(input: &str) -> Output {
         let (range_end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits + 1;
 
-        let mut half_digits = (start_digits as u32).div_ceil(2);
-
-        let mut silly_step = 10u64.pow(half_digits) + 1;
-        let mut silly = if !start_digits.is_multiple_of(2) {
-            10u64.pow(half_digits * 2 - 1) + 10u64.pow(half_digits - 1)
-        } else {
-            let divisor = 10u64.pow(half_digits);
-            let left = range_start / divisor;
-            let silly = left + left * divisor;
-            if silly >= range_start {
-                silly
-            } else {
-                silly + silly_step
-            }
-        };
-
-        let mut digit_increment = silly_step * 10u64.pow(half_digits);
-        // println!(
-        //     "Next silly from {range_start} is {silly} with {half_digits}*2 digits. Go in {silly_step}s until {digit_increment}"
-        // );
-        while silly <= range_end {
-            if silly == digit_increment {
-                half_digits += 1;
-                silly_step = 10u64.pow(half_digits) + 1;
-                silly = 10u64.pow(half_digits * 2 - 1) + 10u64.pow(half_digits - 1);
-                digit_increment = silly_step * 10u64.pow(half_digits);
-                // println!(
-                //     "Silly jump to {silly} with {half_digits}*2 digits. Go in {silly_step}s until {digit_increment}"
-                // );
-            } else {
-                id_sum += silly;
-                silly += silly_step;
-                // println!("Next {silly}")
-            }
-        }
-        // println!("reached end {range_end}");
+        id_sum += sum_2_sillies(range_start, range_end, start_digits as u32);
     }
 
     id_sum
@@ -62,7 +72,7 @@ pub fn part1(puzzle: &str) -> Output {
     part_one(puzzle)
 }
 
-static PRIMES: &[u32] = &[2, 3, 5, 7]; // u32::MAX has 10 digits, this should suffice
+static PRIMES: &[u32] = &[3, 5, 7]; // u32::MAX has 10 digits, this should suffice
 
 fn is_sillier_number(id: u64, len: u32) -> bool {
     for &num_parts in PRIMES {
@@ -112,6 +122,7 @@ fn part_two(input: &str) -> Output {
         let mut digits = start_digits as u32;
         let mut digit_increment = 10u64.pow(digits);
 
+        id_sum += sum_2_sillies(range_start, range_end, digits);
         for i in range_start..=range_end {
             if i == digit_increment {
                 digit_increment *= 10;
