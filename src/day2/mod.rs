@@ -95,22 +95,22 @@ pub fn part1(puzzle: &str) -> Output {
     part_one(puzzle)
 }
 
-static ODD_PRIME_DIVISORS: [&[(u64, u64)]; 11] = [
-    &[],                 // 0
-    &[],                 // 1
-    &[],                 // 2
-    &[(10, 111)],        // 3
-    &[],                 // 4
-    &[(10, 11111)],      // 5
-    &[(100, 10101)],     // 6
-    &[(10, 1111111)],    // 7
-    &[],                 // 8
-    &[(1000, 1001001)],  // 9
-    &[(100, 101010101)], // 10
+static ODD_PRIME_DIVISORS: [Option<(u64, u64)>; 11] = [
+    None,                   // 0
+    None,                   // 1
+    None,                   // 2
+    Some((10, 111)),        // 3
+    None,                   // 4
+    Some((10, 11111)),      // 5
+    Some((100, 10101)),     // 6
+    Some((10, 1111111)),    // 7
+    None,                   // 8
+    Some((1000, 1001001)),  // 9
+    Some((100, 101010101)), // 10
 ]; // u32::MAX has 10 digits, this should suffice
 
 fn is_sillier_number(id: u64, len: u32) -> bool {
-    for &(divisor, multiplier) in ODD_PRIME_DIVISORS[len as usize] {
+    if let Some((divisor, multiplier)) = ODD_PRIME_DIVISORS[len as usize] {
         let init = id % divisor;
         let expected = init * multiplier;
 
