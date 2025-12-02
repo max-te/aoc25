@@ -4,6 +4,29 @@ use crate::util::parse_initial_digits_unsigned_u64;
 
 type Output = u64;
 
+fn is_silly_number(id: u64, digits: u32) -> bool {
+    if digits.is_multiple_of(2) {
+        let divisor = 10u64.pow(digits / 2);
+        let left = id / divisor;
+        let expected = left * divisor + left;
+        id == expected
+    } else {
+        false
+    }
+}
+
+#[cfg(test)]
+#[test]
+fn is_silly_number_test() {
+    assert!(is_silly_number(11, 2));
+    assert!(is_silly_number(22, 2));
+    assert!(is_silly_number(1188511885, 10));
+    assert!(is_silly_number(21212121, 8));
+    assert!(!is_silly_number(555, 3));
+    assert!(!is_silly_number(1234, 4));
+    assert!(!is_silly_number(989876, 6));
+}
+
 fn sum_2_sillies(range_start: u64, range_end: u64, start_digits: u32) -> Output {
     let mut sum = 0;
     let mut half_digits = start_digits.div_ceil(2);
@@ -88,6 +111,9 @@ fn is_sillier_number(id: u64, len: u32) -> bool {
             }
 
             if id == expected {
+                if is_silly_number(id, len) {
+                    return false;
+                }
                 return true;
             }
         }
@@ -98,10 +124,10 @@ fn is_sillier_number(id: u64, len: u32) -> bool {
 #[cfg(test)]
 #[test]
 fn is_sillier_number_test() {
-    assert!(is_sillier_number(11, 2));
-    assert!(is_sillier_number(22, 2));
+    assert!(!is_sillier_number(11, 2));
+    assert!(!is_sillier_number(22, 2));
     assert!(is_sillier_number(555, 3));
-    assert!(is_sillier_number(1188511885, 10));
+    assert!(!is_sillier_number(1188511885, 10));
     assert!(is_sillier_number(2121212121, 10));
     assert!(!is_sillier_number(1234, 4));
     assert!(!is_sillier_number(121234, 6));
