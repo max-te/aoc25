@@ -8,9 +8,9 @@ fn is_silly_number(id: u64, digits: u32) -> bool {
     if digits.is_multiple_of(2) {
         let divisor = 10u64.pow(digits / 2);
         let left = id / divisor;
-        let right = id % divisor;
+        let expected = left * divisor + left;
 
-        left == right
+        id == expected
     } else {
         false
     }
@@ -66,13 +66,13 @@ fn is_sillier_number(id: u64) -> bool {
             let divisor = 10u64.pow(part_len);
 
             let init = id % divisor;
-            let mut remaining = id;
-            let mut all_same = true;
-            for _ in 0..num_parts {
-                all_same &= (remaining % divisor) == init;
-                remaining /= divisor;
+            let mut expected = init;
+            for _ in 1..num_parts {
+                expected *= divisor;
+                expected += init
             }
-            if all_same {
+
+            if id == expected {
                 return true;
             }
         }
