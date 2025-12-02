@@ -55,12 +55,15 @@ pub fn part1(puzzle: &str) -> Output {
     part_one(puzzle)
 }
 
+static PRIMES: &[u32] = &[2, 3, 5, 7]; // u64::MAX has 20 digits, this should suffice
+
 fn is_sillier_number(id: u64) -> bool {
     let len = id.checked_ilog10().unwrap_or_default() + 1;
 
-    for div in 1u32..=(len / 2) {
-        if len.is_multiple_of(div) {
-            let divisor = 10u64.pow(div);
+    for &num_parts in PRIMES {
+        if len.is_multiple_of(num_parts) {
+            let part_len = len / num_parts;
+            let divisor = 10u64.pow(part_len);
 
             let init = id % divisor;
             let mut remaining = id;
