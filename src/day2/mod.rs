@@ -16,6 +16,7 @@ fn is_silly_number(id: u64, digits: u32) -> bool {
     }
 }
 
+#[cfg(test)]
 #[test]
 fn is_silly_number_test() {
     assert!(is_silly_number(11, 2));
@@ -71,6 +72,7 @@ fn is_sillier_number(id: u64) -> bool {
     false
 }
 
+#[cfg(test)]
 #[test]
 fn is_sillier_number_test() {
     assert!(is_sillier_number(11));
@@ -109,18 +111,15 @@ pub fn part2(puzzle: &str) -> Output {
 }
 
 #[cfg(test)]
-mod examples {
-    use super::*;
+#[test]
+fn example1() {
+    let res = part1(include_str!("test.txt"));
+    assert_eq!(res, 1227775554);
+}
 
-    #[test]
-    fn example1() {
-        let res = part1(include_str!("test.txt"));
-        assert_eq!(res, 1227775554);
-    }
-
-    #[test]
-    fn example2() {
-        let res = part2(include_str!("test.txt"));
-        assert_eq!(res, 4174379265);
-    }
+#[cfg(test)]
+#[test]
+fn example2() {
+    let res = part2(include_str!("test.txt"));
+    assert_eq!(res, 4174379265);
 }
