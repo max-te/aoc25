@@ -7,8 +7,8 @@ type Output = u64;
 fn is_silly_number(id: u64) -> bool {
     let mut buf = itoa::Buffer::new();
     let formatted = buf.format(id).as_bytes();
-    let half = formatted.len() / 2;
 
+    let half = formatted.len() / 2;
     formatted[..half] == formatted[half..]
 }
 
@@ -25,7 +25,8 @@ fn part_one(input: &str) -> Output {
         let (range_end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits + 1;
         for i in range_start..=range_end {
-            if is_silly_number(i) {
+            let digits = i.checked_ilog10().unwrap_or_default() + 1;
+            if digits.is_multiple_of(2) && is_silly_number(i) {
                 id_sum += i;
             }
         }
