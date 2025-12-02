@@ -5,7 +5,8 @@ use crate::util::parse_initial_digits_unsigned_u64;
 type Output = u64;
 
 fn is_silly_number(id: u64) -> bool {
-    let formatted = id.to_string();
+    let mut buf = itoa::Buffer::new();
+    let formatted = buf.format(id).as_bytes();
     let half = formatted.len() / 2;
 
     formatted[..half] == formatted[half..]
@@ -38,8 +39,8 @@ pub fn part1(puzzle: &str) -> Output {
 }
 
 fn is_sillier_number(id: u64) -> bool {
-    let formatted = id.to_string();
-    let formatted = formatted.as_bytes();
+    let mut buf = itoa::Buffer::new();
+    let formatted = buf.format(id).as_bytes();
     let len = formatted.len();
 
     for div in 1..=(len / 2) {

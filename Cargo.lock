@@ -65,6 +65,7 @@ dependencies = [
  "aoc-runner",
  "aoc-runner-derive",
  "codspeed-divan-compat",
+ "itoa",
  "paste",
  "ureq",
 ]
