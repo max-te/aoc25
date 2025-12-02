@@ -40,9 +40,16 @@ fn part_one(input: &str) -> Output {
         cursor += start_digits + 1;
         let (range_end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits + 1;
+
+        let mut digits = start_digits as u32;
+        let mut digit_increment = 10u64.pow(digits);
+
         for i in range_start..=range_end {
-            let digits = i.checked_ilog10().unwrap_or_default() + 1;
-            if is_silly_number(i, digits) {
+            if i == digit_increment {
+                digit_increment *= 10;
+                digits += 1;
+                // Powers of 10 are not silly
+            } else if is_silly_number(i, digits) {
                 id_sum += i;
             }
         }
@@ -57,9 +64,7 @@ pub fn part1(puzzle: &str) -> Output {
 
 static PRIMES: &[u32] = &[2, 3, 5, 7]; // u64::MAX has 20 digits, this should suffice
 
-fn is_sillier_number(id: u64) -> bool {
-    let len = id.checked_ilog10().unwrap_or_default() + 1;
-
+fn is_sillier_number(id: u64, len: u32) -> bool {
     for &num_parts in PRIMES {
         if len.is_multiple_of(num_parts) {
             let part_len = len / num_parts;
@@ -83,13 +88,13 @@ fn is_sillier_number(id: u64) -> bool {
 #[cfg(test)]
 #[test]
 fn is_sillier_number_test() {
-    assert!(is_sillier_number(11));
-    assert!(is_sillier_number(22));
-    assert!(is_sillier_number(555));
-    assert!(is_sillier_number(1188511885));
-    assert!(is_sillier_number(2121212121));
-    assert!(!is_sillier_number(1234));
-    assert!(!is_sillier_number(121234));
+    assert!(is_sillier_number(11, 2));
+    assert!(is_sillier_number(22, 2));
+    assert!(is_sillier_number(555, 3));
+    assert!(is_sillier_number(1188511885, 10));
+    assert!(is_sillier_number(2121212121, 10));
+    assert!(!is_sillier_number(1234, 4));
+    assert!(!is_sillier_number(121234, 6));
 }
 
 #[aoc(day2, part2)]
@@ -104,8 +109,15 @@ fn part_two(input: &str) -> Output {
         cursor += start_digits + 1;
         let (range_end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits + 1;
+        let mut digits = start_digits as u32;
+        let mut digit_increment = 10u64.pow(digits);
+
         for i in range_start..=range_end {
-            if is_sillier_number(i) {
+            if i == digit_increment {
+                digit_increment *= 10;
+                digits += 1;
+                // Powers of 10 are not silly
+            } else if is_sillier_number(i, digits) {
                 id_sum += i;
             }
         }
