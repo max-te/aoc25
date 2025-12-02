@@ -162,7 +162,7 @@ fn part_two(input: &str) -> Output {
     let mut id_sum = 0;
 
     while cursor < input.len() {
-        let (range_start, start_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (mut range_start, start_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += start_digits + 1;
         let (range_end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits + 1;
@@ -174,6 +174,7 @@ fn part_two(input: &str) -> Output {
         while digit_increment < range_end {
             id_sum += sum_sillier_numbers_in_range(range_start, digit_increment, digits);
             digits += 1;
+            range_start = digit_increment;
             digit_increment *= 10;
         }
         id_sum += sum_sillier_numbers_in_range(range_start, range_end, digits);
