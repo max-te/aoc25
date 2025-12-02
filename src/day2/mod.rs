@@ -56,15 +56,23 @@ pub fn part1(puzzle: &str) -> Output {
 }
 
 fn is_sillier_number(id: u64) -> bool {
-    let mut buf = itoa::Buffer::new();
-    let formatted = buf.format(id).as_bytes();
-    let len = formatted.len();
+    let len = id.checked_ilog10().unwrap_or_default() + 1;
 
-    for div in 1..=(len / 2) {
+    for div in 1u32..=(len / 2) {
         if len.is_multiple_of(div) {
-            let init = &formatted[..div];
-            let mut parts = formatted.chunks(div);
-            if parts.all(|p| p == init) {
+            let divisor = 10u64.pow(div);
+
+            let init = id % divisor;
+            let mut remaining = id;
+            if loop {
+                if remaining == 0 {
+                    return true;
+                }
+                if remaining % divisor != init {
+                    break false;
+                }
+                remaining /= divisor;
+            } {
                 return true;
             }
         }
