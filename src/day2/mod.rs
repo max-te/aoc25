@@ -67,15 +67,12 @@ fn is_sillier_number(id: u64) -> bool {
 
             let init = id % divisor;
             let mut remaining = id;
-            if loop {
-                if remaining == 0 {
-                    return true;
-                }
-                if remaining % divisor != init {
-                    break false;
-                }
+            let mut all_same = true;
+            for _ in 0..num_parts {
+                all_same &= (remaining % divisor) == init;
                 remaining /= divisor;
-            } {
+            }
+            if all_same {
                 return true;
             }
         }
