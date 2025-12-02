@@ -4,12 +4,27 @@ use crate::util::parse_initial_digits_unsigned_u64;
 
 type Output = u64;
 
-fn is_silly_number(id: u64) -> bool {
-    let mut buf = itoa::Buffer::new();
-    let formatted = buf.format(id).as_bytes();
+fn is_silly_number(id: u64, digits: u32) -> bool {
+    if digits.is_multiple_of(2) {
+        let divisor = 10u64.pow(digits / 2);
+        let left = id / divisor;
+        let right = id % divisor;
 
-    let half = formatted.len() / 2;
-    formatted[..half] == formatted[half..]
+        left == right
+    } else {
+        false
+    }
+}
+
+#[test]
+fn is_silly_number_test() {
+    assert!(is_silly_number(11, 2));
+    assert!(is_silly_number(22, 2));
+    assert!(is_silly_number(1188511885, 10));
+    assert!(is_silly_number(21212121, 8));
+    assert!(!is_silly_number(555, 3));
+    assert!(!is_silly_number(1234, 4));
+    assert!(!is_silly_number(989876, 6));
 }
 
 #[aoc(day2, part1)]
@@ -26,7 +41,7 @@ fn part_one(input: &str) -> Output {
         cursor += end_digits + 1;
         for i in range_start..=range_end {
             let digits = i.checked_ilog10().unwrap_or_default() + 1;
-            if digits.is_multiple_of(2) && is_silly_number(i) {
+            if is_silly_number(i, digits) {
                 id_sum += i;
             }
         }
@@ -63,6 +78,8 @@ fn is_sillier_number_test() {
     assert!(is_sillier_number(555));
     assert!(is_sillier_number(1188511885));
     assert!(is_sillier_number(2121212121));
+    assert!(!is_sillier_number(1234));
+    assert!(!is_sillier_number(121234));
 }
 
 #[aoc(day2, part2)]
