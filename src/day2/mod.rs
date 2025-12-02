@@ -62,7 +62,7 @@ pub fn part1(puzzle: &str) -> Output {
     part_one(puzzle)
 }
 
-static PRIMES: &[u32] = &[2, 3, 5, 7]; // u64::MAX has 20 digits, this should suffice
+static PRIMES: &[u32] = &[2, 3, 5, 7]; // u32::MAX has 10 digits, this should suffice
 
 fn is_sillier_number(id: u64, len: u32) -> bool {
     for &num_parts in PRIMES {
