@@ -65,6 +65,11 @@ fn find_block_joltage(block: &[u8], digits: usize) -> Output {
     if digits == 0 {
         return 0;
     }
+    if digits == block.len() {
+        return block
+            .iter()
+            .fold(0u64, |acc, el| acc * 10 + (*el - b'0') as u64);
+    }
 
     let mut max_pos = 0;
     let mut max = 0;
