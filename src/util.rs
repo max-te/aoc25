@@ -53,3 +53,10 @@ pub fn parse_initial_digits_unsigned_u64(digits: &[u8]) -> (u64, usize) {
     }
     (res, len)
 }
+
+pub fn first_line_length(input: &[u8]) -> usize {
+    input
+        .iter()
+        .position(|&byte| byte == b'\n')
+        .unwrap_or(input.len())
+}

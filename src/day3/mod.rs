@@ -1,5 +1,7 @@
 use aoc_runner_derive::aoc;
 
+use crate::util::first_line_length;
+
 type Output = u64;
 
 #[aoc(day3, part1)]
@@ -48,18 +50,12 @@ fn part_two(input: &str) -> Output {
     let input = input.as_bytes();
     let mut cursor = 0;
     let mut joltage_total = 0;
+    let line_length = first_line_length(&input);
 
     while cursor < input.len() {
-        let start = cursor;
-        while cursor < input.len() && input[cursor] != b'\n' {
-            cursor += 1;
-        }
-        let end = cursor;
-
-        let block_joltage = find_block_joltage(&input[start..end], 12);
+        let block_joltage = find_block_joltage(&input[cursor..cursor + line_length], 12);
         joltage_total += block_joltage;
-
-        cursor += 1;
+        cursor += 1 + line_length;
     }
 
     joltage_total
@@ -73,23 +69,24 @@ fn find_block_joltage(block: &[u8], digits: usize) -> Output {
     let mut max_pos = 0;
     let mut max = 0;
     for pos in 0..block.len() {
-        let val = block[pos] - b'0';
+        let val = block[pos];
         if val > max {
             max_pos = pos;
             max = val;
         }
     }
+    let max = (max - b'0') as u64;
+
+    let left = &block[..max_pos];
+    let right = &block[max_pos + 1..];
 
     let remaining_digits = digits - 1;
-    let right_size = block.len() - max_pos - 1;
-    let left_size = max_pos;
-    let right_digits = remaining_digits.min(right_size);
+    let right_digits = remaining_digits.min(right.len());
     let left_digits = remaining_digits - right_digits;
+    let left_value = find_block_joltage(left, left_digits);
+    let right_value = find_block_joltage(right, right_digits);
 
-    let left_value = find_block_joltage(&block[..left_size], left_digits);
-    let right_value = find_block_joltage(&block[max_pos + 1..], right_digits);
-
-    (left_value * 10 + max as u64) * 10u64.pow(right_digits as u32) + right_value
+    (left_value * 10 + max) * 10u64.pow(right_digits as u32) + right_value
 }
 
 #[cfg(test)]
