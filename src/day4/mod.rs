@@ -1,3 +1,5 @@
+use std::mem;
+
 use aoc_runner_derive::aoc;
 
 use crate::util::first_line_length;
@@ -64,13 +66,32 @@ fn part_two(input: &str) -> Output {
     ];
 
     let mut free_count = 0;
+    let mut positions = Vec::with_capacity(input.len());
 
-    loop {
-        let mut freed_this_round = 0;
-        for cursor in 0..input.len() {
-            if input[cursor] != b'@' {
-                continue;
+    for cursor in 0..input.len() {
+        if input[cursor] != b'@' {
+            continue;
+        }
+        let mut occupied_neighbors = 0;
+        for offset in neighbor_offsets {
+            let ncursor = cursor.wrapping_add_signed(offset);
+            if ncursor < input.len() && input[ncursor as usize] == b'@' {
+                occupied_neighbors += 1
             }
+        }
+        if occupied_neighbors < 4 {
+            input[cursor] = b'.';
+            free_count += 1;
+        } else {
+            positions.push(cursor);
+        }
+    }
+
+    let mut new_positions = Vec::with_capacity(positions.len());
+    loop {
+        new_positions.clear();
+        let mut freed_this_round = 0;
+        for &cursor in &positions {
             let mut occupied_neighbors = 0;
             for offset in neighbor_offsets {
                 let ncursor = cursor.wrapping_add_signed(offset);
@@ -81,6 +102,8 @@ fn part_two(input: &str) -> Output {
             if occupied_neighbors < 4 {
                 input[cursor] = b'.';
                 freed_this_round += 1;
+            } else {
+                new_positions.push(cursor);
             }
         }
 
@@ -89,6 +112,7 @@ fn part_two(input: &str) -> Output {
         } else {
             break;
         }
+        mem::swap(&mut positions, &mut new_positions);
     }
 
     free_count
