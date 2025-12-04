@@ -7,7 +7,6 @@ type Output = u64;
 #[aoc(day4, part1)]
 fn part_one(input: &str) -> Output {
     let input = input.as_bytes();
-    let len = input.len() as isize;
     let width = first_line_length(input);
 
     let neighbor_offsets: [isize; 8] = [
@@ -23,22 +22,23 @@ fn part_one(input: &str) -> Output {
 
     let mut free_count = 0;
 
-    for cursor in 0..input.len() {
+    let mut cursor = 0;
+    while cursor < input.len() {
         if input[cursor] != b'@' {
+            cursor += 1;
             continue;
         }
         let mut occupied_neighbors = 0;
         for offset in neighbor_offsets {
-            let ncursor = cursor as isize + offset;
-            if ncursor < 0 || ncursor >= len {
-                // pass
-            } else if input[ncursor as usize] == b'@' {
+            let ncursor = cursor.wrapping_add_signed(offset);
+            if ncursor < input.len() && input[ncursor as usize] == b'@' {
                 occupied_neighbors += 1
             }
         }
         if occupied_neighbors < 4 {
             free_count += 1;
         }
+        cursor += 1;
     }
     free_count
 }
@@ -50,7 +50,6 @@ pub fn part1(puzzle: &str) -> Output {
 #[aoc(day4, part2)]
 fn part_two(input: &str) -> Output {
     let mut input = input.as_bytes().to_vec();
-    let len = input.len() as isize;
     let width = first_line_length(&input);
 
     let neighbor_offsets: [isize; 8] = [
@@ -74,10 +73,8 @@ fn part_two(input: &str) -> Output {
             }
             let mut occupied_neighbors = 0;
             for offset in neighbor_offsets {
-                let ncursor = cursor as isize + offset;
-                if ncursor < 0 || ncursor >= len {
-                    // pass
-                } else if input[ncursor as usize] == b'@' {
+                let ncursor = cursor.wrapping_add_signed(offset);
+                if ncursor < input.len() && input[ncursor as usize] == b'@' {
                     occupied_neighbors += 1
                 }
             }
