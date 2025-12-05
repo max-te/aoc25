@@ -36,7 +36,8 @@ fn part_one(input: &str) -> Output {
     while cursor < input.len() {
         let (number, digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += digits + 1;
-        if merged_ranges.iter().any(|r| r.0 <= number && r.1 >= number) {
+        let relevant = merged_ranges.partition_point(|r| r.1 < number);
+        if relevant < merged_ranges.len() && merged_ranges[relevant].0 <= number {
             good_ingredients += 1;
         }
     }
