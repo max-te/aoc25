@@ -7,7 +7,7 @@ type Output = u64;
 #[aoc(day5, part1)]
 fn part_one(input: &str) -> Output {
     let input = input.as_bytes();
-    let mut ranges = Vec::new();
+    let mut ranges = Vec::with_capacity(input.len() / 4);
     let mut cursor = 0;
 
     while input[cursor] != b'\n' {
@@ -16,14 +16,27 @@ fn part_one(input: &str) -> Output {
         let (end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += end_digits;
         cursor += 1;
-        ranges.push(start..=end);
+        ranges.push((start, end));
     }
+    ranges.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
+    let mut merged_ranges = Vec::with_capacity(ranges.len());
+    let mut last = ranges[0];
+    for range in &ranges[1..] {
+        if range.0 <= last.1 {
+            last.1 = last.1.max(range.1);
+        } else {
+            merged_ranges.push(last);
+            last = *range;
+        }
+    }
+    merged_ranges.push(last);
 
     let mut good_ingredients = 0;
     while cursor < input.len() {
         let (number, digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
         cursor += digits + 1;
-        if ranges.iter().any(|r| r.contains(&number)) {
+        if merged_ranges.iter().any(|r| r.0 <= number && r.1 >= number) {
             good_ingredients += 1;
         }
     }
@@ -38,7 +51,7 @@ pub fn part1(puzzle: &str) -> Output {
 #[aoc(day5, part2)]
 fn part_two(input: &str) -> Output {
     let input = input.as_bytes();
-    let mut ranges = Vec::new();
+    let mut ranges = Vec::with_capacity(input.len() / 4);
     let mut cursor = 0;
 
     while input[cursor] != b'\n' {
