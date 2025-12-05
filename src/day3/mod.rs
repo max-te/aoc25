@@ -50,7 +50,7 @@ fn part_two(input: &str) -> Output {
     let input = input.as_bytes();
     let mut cursor = 0;
     let mut joltage_total = 0;
-    let line_length = first_line_length(&input);
+    let line_length = first_line_length(input);
 
     while cursor < input.len() {
         let block_joltage = find_block_joltage(&input[cursor..cursor + line_length], 12);
@@ -73,8 +73,7 @@ fn find_block_joltage(block: &[u8], digits: usize) -> Output {
 
     let mut max_pos = 0;
     let mut max = 0;
-    for pos in 0..block.len() {
-        let val = block[pos];
+    for (pos, &val) in block.iter().enumerate() {
         if val > max {
             max_pos = pos;
             max = val;

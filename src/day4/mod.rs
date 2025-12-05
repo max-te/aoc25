@@ -33,7 +33,7 @@ fn part_one(input: &str) -> Output {
         let mut occupied_neighbors = 0;
         for offset in neighbor_offsets {
             let ncursor = cursor.wrapping_add_signed(offset);
-            if ncursor < input.len() && input[ncursor as usize] == b'@' {
+            if ncursor < input.len() && input[ncursor] == b'@' {
                 occupied_neighbors += 1
             }
         }
@@ -75,7 +75,7 @@ fn part_two(input: &str) -> Output {
         let mut occupied_neighbors = 0;
         for offset in neighbor_offsets {
             let ncursor = cursor.wrapping_add_signed(offset);
-            if ncursor < input.len() && input[ncursor as usize] == b'@' {
+            if ncursor < input.len() && input[ncursor] == b'@' {
                 occupied_neighbors += 1
             }
         }
@@ -95,7 +95,7 @@ fn part_two(input: &str) -> Output {
             let mut occupied_neighbors = 0;
             for offset in neighbor_offsets {
                 let ncursor = cursor.wrapping_add_signed(offset);
-                if ncursor < input.len() && input[ncursor as usize] == b'@' {
+                if ncursor < input.len() && input[ncursor] == b'@' {
                     occupied_neighbors += 1
                 }
             }
