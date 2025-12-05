@@ -1,6 +1,5 @@
 use aoc_runner_derive::aoc;
-
-use crate::util::parse_initial_digits_unsigned_u64;
+use atoi_simd::parse_prefix_pos;
 
 type Output = u64;
 
@@ -11,9 +10,9 @@ fn part_one(input: &str) -> Output {
     let mut cursor = 0;
 
     while input[cursor] != b'\n' {
-        let (start, start_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (start, start_digits) = parse_prefix_pos::<u64>(&input[cursor..]).unwrap_or_default();
         cursor += start_digits + 1;
-        let (end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (end, end_digits) = parse_prefix_pos(&input[cursor..]).unwrap_or_default();
         cursor += end_digits;
         cursor += 1;
         ranges.push((start, end));
@@ -34,7 +33,7 @@ fn part_one(input: &str) -> Output {
 
     let mut good_ingredients = 0;
     while cursor < input.len() {
-        let (number, digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (number, digits) = parse_prefix_pos(&input[cursor..]).unwrap_or_default();
         cursor += digits + 1;
         let relevant = merged_ranges.partition_point(|r| r.1 < number);
         if relevant < merged_ranges.len() && merged_ranges[relevant].0 <= number {
@@ -56,9 +55,9 @@ fn part_two(input: &str) -> Output {
     let mut cursor = 0;
 
     while input[cursor] != b'\n' {
-        let (start, start_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (start, start_digits) = parse_prefix_pos::<u64>(&input[cursor..]).unwrap_or_default();
         cursor += start_digits + 1;
-        let (end, end_digits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (end, end_digits) = parse_prefix_pos(&input[cursor..]).unwrap_or_default();
         cursor += end_digits;
         cursor += 1;
         ranges.push((start, end));
