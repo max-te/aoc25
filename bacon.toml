@@ -6,5 +6,12 @@ allow_warnings = true
 need_stdout = true
 on_change_strategy = "kill_then_restart"
 
+[jobs.aoc]
+command = ["cargo", "aoc"]
+
+allow_warnings = true
+need_stdout = true
+on_change_strategy = "kill_then_restart"
 [keybindings]
 b = "job:bench"
+a = "job:aoc"
