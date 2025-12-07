@@ -22,9 +22,10 @@ jobs:
     steps:
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: |
+          echo "::set-output name=date::$(date +'%Y-%m-%d')"
+          echo "::set-output name=yesterday::$(date -d yesterday +'%Y-%m-%d')"
       - uses: actions/checkout@v4
-
       - name: Setup rust toolchain, cache and cargo-codspeed binary
         uses: moonrepo/setup-rust@v1
         with:
@@ -49,7 +50,7 @@ jobs:
           path: input
           key: aoc-input-${{ steps.date.outputs.date }}
           restore-keys: |
-            aoc-input
+            aoc-input-${{ steps.date.outputs.yesterday }}
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
         with:
