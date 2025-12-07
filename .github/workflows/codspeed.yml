@@ -20,6 +20,9 @@ jobs:
     env:
       AOC_SESSION: ${{ secrets.AOC_SESSION }}
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - uses: actions/checkout@v4
 
       - name: Setup rust toolchain, cache and cargo-codspeed binary
@@ -40,6 +43,13 @@ jobs:
       - name: Build the benchmark target(s)
         run: cargo codspeed build --bench codspeed
 
+      - name: Cache the puzzle inputs
+        uses: actions/cache@v4
+        with:
+          path: input
+          key: aoc-input-${{ steps.date.outputs.date }}
+          restore-keys: |
+            aoc-input
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
         with:
