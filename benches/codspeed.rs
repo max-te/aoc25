@@ -1,8 +1,10 @@
+use std::path::PathBuf;
+
 use divan::{Bencher, black_box};
 
 fn load_input(day: u8) -> String {
-    let input_file_path = format!("input/2025/day{day}.txt");
-    if let Ok(input) = std::fs::read_to_string(input_file_path) {
+    let input_file_path = PathBuf::from(format!("input/2025/day{day}.txt"));
+    if let Ok(input) = std::fs::read_to_string(&input_file_path) {
         return input;
     }
 
@@ -17,10 +19,18 @@ fn load_input(day: u8) -> String {
         .call()
         .expect("should be able to send request");
     assert_eq!(response.status(), 200);
-    response
+    let input = response
         .body_mut()
         .read_to_string()
-        .expect("should be able to read response body")
+        .expect("should be able to read response body");
+    std::fs::create_dir_all(
+        input_file_path
+            .parent()
+            .expect("input file path should have depth > 0"),
+    )
+    .expect("should be able to create inputs folder");
+    std::fs::write(input_file_path, &input).expect("should be able to write input file");
+    input
 }
 
 macro_rules! benchmark_days {
