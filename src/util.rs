@@ -1,3 +1,4 @@
+#[allow(unused)]
 #[inline]
 pub fn parse_initial_digits(digits: &[u8]) -> (i64, usize) {
     let mut len = 0;
