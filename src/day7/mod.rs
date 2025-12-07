@@ -11,11 +11,12 @@ fn part_one(input: &str) -> Output {
     let line_count = input.len().div_ceil(line_len);
     let start = input.iter().position(|&c| c == b'S').unwrap();
     let mut beam_ends = Vec::with_capacity(line_len);
+    let mut new_beam_ends = Vec::with_capacity(line_len);
     beam_ends.push(start);
 
     let mut split_count = 0;
     for line_no in (2..line_count).step_by(2) {
-        let mut new_beam_ends = Vec::with_capacity(line_len);
+        new_beam_ends.clear();
         let line = &input[line_no * line_len..line_no * line_len + line_len - 1];
         for &beam_pos in beam_ends.iter() {
             match line[beam_pos] {
@@ -35,7 +36,7 @@ fn part_one(input: &str) -> Output {
                 _ => unreachable!(),
             }
         }
-        beam_ends = new_beam_ends;
+        std::mem::swap(&mut beam_ends, &mut new_beam_ends);
     }
 
     split_count
@@ -52,10 +53,11 @@ fn part_two(input: &str) -> Output {
     let line_count = input.len().div_ceil(line_len);
     let start = input.iter().position(|&c| c == b'S').unwrap();
     let mut beam_ends = Vec::with_capacity(line_len);
+    let mut new_beam_ends = Vec::<(usize, Output)>::with_capacity(line_len);
     beam_ends.push((start, 1));
 
     for line_no in (2..line_count).step_by(2) {
-        let mut new_beam_ends: Vec<(usize, u64)> = Vec::with_capacity(line_len);
+        new_beam_ends.clear();
         let line = &input[line_no * line_len..line_no * line_len + line_len - 1];
         for &(beam_pos, path_count) in beam_ends.iter() {
             match line[beam_pos] {
@@ -82,7 +84,7 @@ fn part_two(input: &str) -> Output {
                 _ => unreachable!(),
             }
         }
-        beam_ends = new_beam_ends;
+        std::mem::swap(&mut beam_ends, &mut new_beam_ends);
     }
 
     beam_ends.into_iter().map(|(_, count)| count).sum()
