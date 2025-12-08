@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use rustc_hash::{FxBuildHasher, FxHashSet};
 
 use aoc_runner_derive::aoc;
 use petgraph::unionfind::UnionFind;
@@ -49,7 +49,8 @@ fn part_one_inner(input: &str, connections_count: usize) -> Output {
     }
 
     // Determine components
-    let mut connected_nodes = HashSet::new();
+    let mut connected_nodes =
+        FxHashSet::with_capacity_and_hasher(positions.len(), FxBuildHasher::default());
     let mut network = UnionFind::<usize>::new(positions.len());
     for connection in shortest {
         network.union(connection.1, connection.2);
@@ -110,7 +111,8 @@ fn part_two(input: &str) -> u64 {
         shortest_to_tracked.push((sq_dist, 0, idx));
     }
 
-    let mut tracked_component = HashSet::with_capacity(positions.len());
+    let mut tracked_component =
+        FxHashSet::with_capacity_and_hasher(positions.len(), FxBuildHasher::default());
     tracked_component.insert(0);
 
     while tracked_component.len() < positions.len() {
