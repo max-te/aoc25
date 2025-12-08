@@ -58,23 +58,14 @@ fn part_one_inner(input: &str, connections_count: usize) -> Output {
         connected_nodes.insert(connection.2);
     }
     // Find 3 largest
-    let mut comp_sizes = Vec::with_capacity(connected_nodes.len());
+    let mut comp_sizes = vec![0; positions.len()];
     for node in connected_nodes.iter() {
-        if network.find(*node) == *node {
-            let comp_size = connected_nodes
-                .iter()
-                .filter(|&other| network.find(*other) == *node)
-                .count();
-            comp_sizes.push(comp_size);
-        }
+        let repr = network.find(*node);
+        comp_sizes[repr] += 1;
     }
     comp_sizes.sort_unstable();
-    let mut product = 1;
-    for _ in 0..3 {
-        product *= comp_sizes.pop().unwrap();
-    }
 
-    product
+    comp_sizes.iter().rev().take(3).product()
 }
 
 #[aoc(day8, part1)]
