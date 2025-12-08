@@ -7,6 +7,10 @@ use crate::util::parse_initial_digits;
 
 type Output = usize;
 
+fn dist(node_a: (i64, i64, i64), node_b: (i64, i64, i64)) -> i64 {
+    (node_a.0 - node_b.0).pow(2) + (node_a.1 - node_b.1).pow(2) + (node_a.2 - node_b.2).pow(2)
+}
+
 fn part_one_inner(input: &str, connections_count: usize) -> Output {
     let input = input.as_bytes();
 
@@ -27,9 +31,7 @@ fn part_one_inner(input: &str, connections_count: usize) -> Output {
     let mut shortest = Vec::<(i64, usize, usize)>::with_capacity(connections_count);
     for (idx_a, node_a) in positions.iter().enumerate() {
         for (idx_b, node_b) in positions.iter().enumerate().skip(idx_a + 1) {
-            let sq_dist = (node_a.0 - node_b.0).pow(2)
-                + (node_a.1 - node_b.1).pow(2)
-                + (node_a.2 - node_b.2).pow(2);
+            let sq_dist = dist(*node_a, *node_b);
             if shortest.len() < connections_count {
                 shortest.insert(
                     shortest.partition_point(|&x| x.0 < sq_dist),
@@ -100,33 +102,43 @@ fn part_two(input: &str) -> u64 {
         positions.push((x, y, z));
     }
 
-    let mut network = UnionFind::<usize>::new(positions.len());
+    let mut longest_in_tracked = (0, 0, 0);
 
-    // Find shortest connections
-    let mut edges = Vec::<(i64, usize, usize)>::with_capacity(positions.len().pow(2));
-    for (idx_a, node_a) in positions.iter().enumerate() {
-        for (idx_b, node_b) in positions.iter().enumerate().skip(idx_a + 1) {
-            let sq_dist = (node_a.0 - node_b.0).pow(2)
-                + (node_a.1 - node_b.1).pow(2)
-                + (node_a.2 - node_b.2).pow(2);
-            edges.push((sq_dist, idx_a, idx_b));
-        }
+    let mut shortest_to_tracked = Vec::with_capacity(positions.len());
+    for (idx, p) in positions.iter().enumerate() {
+        let sq_dist = dist(positions[0], *p);
+        shortest_to_tracked.push((sq_dist, 0, idx));
     }
-    edges.sort_by_key(|x| x.0);
 
-    let mut last_connection = (0, 0);
-    for connection in edges {
-        last_connection = (connection.1, connection.2);
+    let mut tracked_component = HashSet::with_capacity(positions.len());
+    tracked_component.insert(0);
 
-        if network.union(connection.1, connection.2) {
-            let root = network.find(0);
-            if (0..positions.len()).all(|p| network.find(p) == root) {
-                break;
+    while tracked_component.len() < positions.len() {
+        let new_connection = shortest_to_tracked
+            .iter()
+            .filter(|x| x.0 > 0)
+            .min_by_key(|x| x.0)
+            .unwrap()
+            .clone();
+        tracked_component.insert(new_connection.2);
+        shortest_to_tracked[new_connection.2] = (0, new_connection.2, new_connection.2);
+        let new_pos = positions[new_connection.2];
+
+        for (unconn_idx, unconn_node) in positions.iter().enumerate() {
+            if tracked_component.contains(&unconn_idx) {
+                continue;
+            }
+            let sq_dist = dist(*unconn_node, new_pos);
+            if sq_dist < shortest_to_tracked[unconn_idx].0 {
+                shortest_to_tracked[unconn_idx] = (sq_dist, new_connection.2, unconn_idx);
             }
         }
+        if new_connection.0 > longest_in_tracked.0 {
+            longest_in_tracked = new_connection;
+        }
     }
 
-    (positions[last_connection.0].0 * positions[last_connection.1].0) as u64
+    (positions[longest_in_tracked.1].0 * positions[longest_in_tracked.2].0) as u64
 }
 
 pub fn part2(puzzle: &str) -> u64 {
