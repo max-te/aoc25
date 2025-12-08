@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use aoc_runner_derive::aoc;
 use petgraph::unionfind::UnionFind;
 
-use crate::util::parse_initial_digits_unsigned_u64;
+use crate::util::parse_initial_digits;
 
 type Output = usize;
 
@@ -14,22 +14,22 @@ fn part_one_inner(input: &str, connections_count: usize) -> Output {
     let mut positions = Vec::with_capacity(1000);
     let mut cursor = 0;
     while cursor < input.len() {
-        let (x, xdigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (x, xdigits) = parse_initial_digits(&input[cursor..]);
         cursor += xdigits + 1;
-        let (y, ydigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (y, ydigits) = parse_initial_digits(&input[cursor..]);
         cursor += ydigits + 1;
-        let (z, zdigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (z, zdigits) = parse_initial_digits(&input[cursor..]);
         cursor += zdigits + 1;
         positions.push((x, y, z));
     }
 
     // Find shortest connections
-    let mut shortest = Vec::<(u64, usize, usize)>::with_capacity(connections_count);
+    let mut shortest = Vec::<(i64, usize, usize)>::with_capacity(connections_count);
     for (idx_a, node_a) in positions.iter().enumerate() {
         for (idx_b, node_b) in positions.iter().enumerate().skip(idx_a + 1) {
-            let sq_dist = (node_a.0.abs_diff(node_b.0)).pow(2)
-                + (node_a.1.abs_diff(node_b.1)).pow(2)
-                + (node_a.2.abs_diff(node_b.2)).pow(2);
+            let sq_dist = (node_a.0 - node_b.0).pow(2)
+                + (node_a.1 - node_b.1).pow(2)
+                + (node_a.2 - node_b.2).pow(2);
             if shortest.len() < connections_count {
                 shortest.insert(
                     shortest.partition_point(|&x| x.0 < sq_dist),
@@ -91,11 +91,11 @@ fn part_two(input: &str) -> u64 {
     let mut positions = Vec::with_capacity(1000);
     let mut cursor = 0;
     while cursor < input.len() {
-        let (x, xdigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (x, xdigits) = parse_initial_digits(&input[cursor..]);
         cursor += xdigits + 1;
-        let (y, ydigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (y, ydigits) = parse_initial_digits(&input[cursor..]);
         cursor += ydigits + 1;
-        let (z, zdigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (z, zdigits) = parse_initial_digits(&input[cursor..]);
         cursor += zdigits + 1;
         positions.push((x, y, z));
     }
@@ -103,12 +103,12 @@ fn part_two(input: &str) -> u64 {
     let mut network = UnionFind::<usize>::new(positions.len());
 
     // Find shortest connections
-    let mut edges = Vec::<(u64, usize, usize)>::with_capacity(positions.len().pow(2));
+    let mut edges = Vec::<(i64, usize, usize)>::with_capacity(positions.len().pow(2));
     for (idx_a, node_a) in positions.iter().enumerate() {
         for (idx_b, node_b) in positions.iter().enumerate().skip(idx_a + 1) {
-            let sq_dist = (node_a.0.abs_diff(node_b.0)).pow(2)
-                + (node_a.1.abs_diff(node_b.1)).pow(2)
-                + (node_a.2.abs_diff(node_b.2)).pow(2);
+            let sq_dist = (node_a.0 - node_b.0).pow(2)
+                + (node_a.1 - node_b.1).pow(2)
+                + (node_a.2 - node_b.2).pow(2);
             edges.push((sq_dist, idx_a, idx_b));
         }
     }
@@ -126,7 +126,7 @@ fn part_two(input: &str) -> u64 {
         }
     }
 
-    positions[last_connection.0].0 * positions[last_connection.1].0
+    (positions[last_connection.0].0 * positions[last_connection.1].0) as u64
 }
 
 pub fn part2(puzzle: &str) -> u64 {
