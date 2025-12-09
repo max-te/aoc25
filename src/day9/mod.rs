@@ -1,6 +1,6 @@
 use aoc_runner_derive::aoc;
 
-use crate::util::{parse_initial_digits, parse_initial_digits_unsigned_u64};
+use crate::util::{parse_initial_digits, parse_initial_digits_unsigned_u32};
 
 type Output = u64;
 
@@ -43,9 +43,9 @@ fn part_two(input: &str) -> u64 {
     let mut positions = Vec::with_capacity(500);
     let mut cursor = 0;
     while cursor < input.len() {
-        let (x, xdigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (x, xdigits) = parse_initial_digits_unsigned_u32(&input[cursor..]);
         cursor += xdigits + 1;
-        let (y, ydigits) = parse_initial_digits_unsigned_u64(&input[cursor..]);
+        let (y, ydigits) = parse_initial_digits_unsigned_u32(&input[cursor..]);
         cursor += ydigits + 1;
         positions.push((x, y));
     }
@@ -59,11 +59,11 @@ fn part_two(input: &str) -> u64 {
     let mut max_size = 1;
     for (idx, corner1) in positions.iter().enumerate() {
         'rectangles: for corner2 in positions.iter().skip(idx + 1) {
-            let left = Output::min(corner1.0, corner2.0);
-            let right = Output::max(corner1.0, corner2.0);
-            let bot = Output::min(corner1.1, corner2.1);
-            let top = Output::max(corner1.1, corner2.1);
-            let size = (right - left + 1) * (top - bot + 1);
+            let left = u32::min(corner1.0, corner2.0);
+            let right = u32::max(corner1.0, corner2.0);
+            let bot = u32::min(corner1.1, corner2.1);
+            let top = u32::max(corner1.1, corner2.1);
+            let size = ((right - left + 1) as u32) * ((top - bot + 1) as u32);
             if size > max_size {
                 // The rectangle is contained if its midpoint is inside and no inner point is on an edge.
                 let midpoint = (left.midpoint(right), top.midpoint(bot));
@@ -123,10 +123,10 @@ fn part_two(input: &str) -> u64 {
         }
     }
 
-    max_size
+    max_size.into()
 }
 
-fn is_inside(positions: &[(u64, u64)], point: (u64, u64)) -> bool {
+fn is_inside(positions: &[(u32, u32)], point: (u32, u32)) -> bool {
     // This is still not right, since it doesn't distinguish
     //                        oxxx...
     //                        |xxx...
