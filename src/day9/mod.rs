@@ -127,16 +127,23 @@ fn part_two(input: &str) -> u64 {
 }
 
 fn is_inside(positions: &[(u64, u64)], point: (u64, u64)) -> bool {
+    // This is still not right, since it doesn't distinguish
+    //                        oxxx...
+    //                        |xxx...
+    // -->o---o--> from ->o---o----->
+    //    |xxx|           |xxxxxxx...
+    //    oxxxo           oxxxxxxx...
+    //
+    // Luckily for us, such ridges are not relevant for the puzzle inputs.
     let mut winding_number = 0;
     #[cfg(test)]
     println!("Check if {point:?} is inside");
-    for edge in positions.windows(2) {
+    for edge in positions.chunks(2) {
         // Only consider horizontal edges
-        if edge[0].1 == edge[1].1 {
-            if edge[0].1 >= point.1 && (edge[0].0 <= point.0) != (edge[1].0 <= point.0) {
-                // println!("Edge {edge:?}");
-                winding_number += 1;
-            }
+        assert_eq!(edge[0].1, edge[1].1);
+        if edge[0].1 >= point.1 && (edge[0].0 <= point.0) != (edge[1].0 <= point.0) {
+            // println!("Edge {edge:?}");
+            winding_number += 1;
         }
     }
     #[cfg(test)]
