@@ -17,9 +17,12 @@ harness = false
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
 atoi_simd = "0.17.0"
+good_lp = { version="1.14.2", default-features=false, features=["microlp"]}
 itoa = "1.0.15"
+pathfinding = "4.14.0"
 petgraph = "0.8.3"
 rustc-hash = "2.1.1"
+smallvec = "1.15.1"
 
 [dev-dependencies]
 divan = { version = "4.1.0", package = "codspeed-divan-compat" }
